@@ -5,6 +5,12 @@ import {
   useSignInMutation,
 } from "../redux/modules/LoginAPI";
 
+interface ChangeInterface {
+  event: React.ChangeEvent<HTMLInputElement>;
+  changeFnc: React.Dispatch<React.SetStateAction<string>>;
+  changeCheckFnc?: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
 export default function SignIn() {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -25,6 +31,11 @@ export default function SignIn() {
     }
   );
   const [signIn, { isLoading }] = useSignInMutation();
+
+  const changeHandler = (payload: ChangeInterface) => {
+    payload.changeFnc(payload.event.target.value);
+    !!payload.changeCheckFnc && payload.changeCheckFnc(true);
+  };
 
   const changeUsername = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUsername(event.target.value);
@@ -70,13 +81,28 @@ export default function SignIn() {
       <form onSubmit={onLoginSubmit}>
         Username{" "}
         <input
-          onChange={changeUsername}
+          onChange={(e) =>
+            changeHandler({
+              event: e,
+              changeFnc: setUsername,
+              changeCheckFnc: setCheckUsername,
+            })
+          }
           onBlur={usernameOutFocus}
           value={username}
           autoFocus
         />
         <br />
-        Password <input onChange={changePassword} value={password} />
+        Password{" "}
+        <input
+          onChange={(e) =>
+            changeHandler({
+              event: e,
+              changeFnc: setPassword,
+            })
+          }
+          value={password}
+        />
         <br />
         Nickname
         <input

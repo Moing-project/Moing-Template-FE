@@ -1,72 +1,28 @@
-import {
-  BaseQueryFn,
-  FetchBaseQueryMeta,
-  createApi,
-} from "@reduxjs/toolkit/query/react";
-import { AxiosArgs, ResponseData } from "../../types/BasicRequestType";
+import { createApi } from "@reduxjs/toolkit/query/react";
+import { ResponseData } from "../../types/BasicRequestType";
 import {
   Auth,
   LoginData,
   NicknameDataType,
-  SignInErrorData,
   SingInData,
   UsernameDataType,
 } from "../../types/LoginType";
-import axios, { AxiosError, AxiosInstance } from "axios";
+import { axiosBaseQuery } from "../config/axios";
+import axios from "axios";
 
-const instance: AxiosInstance = axios.create({
-  baseURL: "http://1.244.223.183",
+const instance = axios.create({
+  // baseURL: "http://1.244.223.183",
+  baseURL: process.env.REACT_APP_SERVER_URL,
 });
 
-const axiosBaseQuery =
-  (
-    instance = axios.create({ baseURL: "" })
-  ): BaseQueryFn<AxiosArgs, unknown, unknown, {}, FetchBaseQueryMeta> =>
-  async ({ url, method, data, params }) => {
-    try {
-      console.log(data);
-      const result = await instance({
-        url,
-        method,
-        data,
-        params,
-      });
-      console.log("result", result);
-      return {
-        data: result.data,
-        meta: {
-          request: result.request,
-        },
-      };
-    } catch (axiosError) {
-      let err = axiosError as AxiosError;
-      console.log(err);
-      let data = err.response?.data as ResponseData<SignInErrorData>;
-      if (data !== null) {
-        return {
-          error: {
-            msg: data.msg,
-            data: !!data.data ? data.data : null,
-          },
-          meta: {
-            request: err.request,
-            response: err.response,
-          } as FetchBaseQueryMeta,
-        };
-      }
-      console.log("error", err);
-      return {
-        error: {
-          status: err.status,
-          data: err.response?.data || err.message,
-        },
-        meta: {
-          request: err.request,
-          response: err.response,
-        } as FetchBaseQueryMeta,
-      };
-    }
-  };
+instance.interceptors.response.use(
+  (value) => value,
+  (error) => {
+    console.log(error);
+
+    return error;
+  }
+);
 
 export const Loginapi = createApi({
   // The cache reducer expects to be added at `state.api` (already default - this is optional)
@@ -84,11 +40,15 @@ export const Loginapi = createApi({
         method: "POST",
         data: payload,
       }),
-      transformResponse: (response: ResponseData<any>, meta, arg) => {
+      transformResponse: (
+        response: { data: ResponseData<LoginData> },
+        meta,
+        arg
+      ) => {
         console.log("response", response);
         console.log("meta", meta);
         console.log("arg", arg);
-        return response;
+        return response.data;
       },
     }),
     SignIn: builder.mutation<ResponseData<any>, SingInData>({
@@ -147,6 +107,10 @@ export const Loginapi = createApi({
         console.log("meta", meta);
         console.log("arg", arg);
         return response as ResponseData<any>;
+      },
+      onQueryStarted: (arg, api) => {
+        console.log("arg", arg);
+        console.log("api", api);
       },
       // transformErrorResponse: (response, meta, arg) => {
       //   console.log("response", response);
