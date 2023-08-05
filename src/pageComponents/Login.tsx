@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { usePostLoginMutation } from "../redux/modules/LoginAPI";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
+  const navigate = useNavigate();
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [login, { isLoading }] = usePostLoginMutation();
@@ -33,6 +35,8 @@ export default function Login() {
       Password <input onChange={changePassword} value={password} />
       <br />
       <button>버튼</button>
+      <br />
+      <button onClick={() => navigate("/")}>Home</button>
     </form>
   );
 }

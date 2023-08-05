@@ -4,6 +4,7 @@ import {
   useGetCheckUsernameQuery,
   useSignInMutation,
 } from "../redux/modules/LoginAPI";
+import { useNavigate } from "react-router-dom";
 
 interface ChangeInterface {
   event: React.ChangeEvent<HTMLInputElement>;
@@ -12,6 +13,7 @@ interface ChangeInterface {
 }
 
 export default function SignIn() {
+  const navigate = useNavigate();
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [nickname, setNickname] = useState<string>("");
@@ -35,20 +37,6 @@ export default function SignIn() {
   const changeHandler = (payload: ChangeInterface) => {
     payload.changeFnc(payload.event.target.value);
     !!payload.changeCheckFnc && payload.changeCheckFnc(true);
-  };
-
-  const changeUsername = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setUsername(event.target.value);
-    setCheckUsername(true);
-  };
-
-  const changePassword = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(event.target.value);
-  };
-
-  const changeNickname = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setNickname(event.target.value);
-    setCheckNickname(true);
   };
 
   const onLoginSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -106,12 +94,20 @@ export default function SignIn() {
         <br />
         Nickname
         <input
-          onChange={changeNickname}
+          onChange={(e) =>
+            changeHandler({
+              event: e,
+              changeFnc: setNickname,
+              changeCheckFnc: setCheckNickname,
+            })
+          }
           onBlur={nicknameOutFocus}
           value={nickname}
         />
         <br />
         <button>버튼</button>
+        <br />
+        <button onClick={() => navigate("/")}>Home</button>
       </form>
     </>
   );

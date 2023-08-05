@@ -34,7 +34,6 @@ export default function Layout() {
         width={200}
         height={200}
       />
-      <button onClick={() => navigate("/login")}>로그인</button>
       <input type="file" multiple onChange={setFilesHandler} />
       <button onClick={uploadHandler}>업로드</button>
       {!!imageSrc &&
@@ -46,6 +45,8 @@ export default function Layout() {
         New Windows
       </button>
       <br />
+      <button onClick={() => navigate("/login")}>로그인</button>
+      <button onClick={() => navigate("/signin")}>회원가입</button>
       <TuiEditor content="HEloasdsafsd" editorRef={ref} />
     </>
   );
